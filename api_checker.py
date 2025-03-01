@@ -1,15 +1,18 @@
 import requests
 import time
 from colorama import Fore, Style, init
-from tqdm import tqdm
+from rich.progress import Progress
 from tabulate import tabulate
 
 init(autoreset=True)  # Inisialisasi colorama agar warna otomatis reset
 
 def check_api_status(url):
     try:
-        for _ in tqdm(range(10), desc=f"Mengecek {url}", ncols=75, colour='cyan'):
-            time.sleep(0.1)
+        with Progress() as progress:
+            task = progress.add_task(f"[cyan]Mengecek {url}...[/]", total=10)
+            for _ in range(10):
+                time.sleep(0.1)
+                progress.update(task, advance=1)
         
         response = requests.get(url, timeout=5)
         status = "UP" if response.status_code == 200 else "DOWN"
